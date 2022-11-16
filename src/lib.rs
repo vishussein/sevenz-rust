@@ -1,13 +1,13 @@
 #[cfg(feature = "aes256")]
 mod aes256sha256;
-pub(crate) mod archive;
+pub mod archive;
 mod bcj;
-pub(crate) mod decoders;
+pub mod decoders;
 mod delta;
 mod error;
-pub(crate) mod folder;
+pub mod folder;
 mod lzma;
-mod password;
+pub mod password;
 mod reader;
 use std::io::{BufWriter, Read, Seek, SeekFrom};
 use std::path::Path;

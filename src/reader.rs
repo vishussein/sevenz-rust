@@ -1014,7 +1014,7 @@ impl<'a, R: Read> Iterator for NamesReader<'a, R> {
 
 pub struct SevenZReader<R: Read + Seek> {
     source: R,
-    archive: Archive,
+    pub archive: Archive,
     password: Vec<u8>,
 }
 
@@ -1084,9 +1084,9 @@ impl<R: Read + Seek> SevenZReader<R> {
         Ok((decoder, pack_size))
     }
 
-    pub fn for_each_entries<F: Fn(&SevenZArchiveEntry, &mut dyn Read) -> Result<bool, Error>>(
+    pub fn for_each_entries<F: FnMut(&SevenZArchiveEntry, &mut dyn Read) -> Result<bool, Error>>(
         &mut self,
-        each: F,
+        mut each: F,
     ) -> Result<(), Error> {
         let mut entry_index = 0;
         let mut current_folder_index = -1;
