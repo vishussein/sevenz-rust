@@ -146,7 +146,7 @@ impl<R: Read> LZMAReader<R> {
         let need_mem = get_memery_usage_by_props(dict_size, props)?;
         if mem_limit_kb < need_mem {
             return Err(Error::new(
-                ErrorKind::OutOfMemory,
+                ErrorKind::Other,
                 format!(
                     "{}kb memery needed,but limit was {}kb",
                     need_mem, mem_limit_kb

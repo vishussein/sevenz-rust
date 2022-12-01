@@ -146,7 +146,9 @@ impl LZMACoder {
 
 #[inline(always)]
 pub(crate) fn init_probs(probs: &mut [u16]) {
-    probs.fill(PROB_INIT);
+    for prob in probs.iter_mut() {
+        *prob = PROB_INIT;
+    }
 }
 
 pub(crate) struct LiteralCoder {

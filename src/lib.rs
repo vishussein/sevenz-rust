@@ -104,7 +104,7 @@ fn decompress_impl<R: Read + Seek>(
     password: Password,
     extract_fn: impl Fn(&SevenZArchiveEntry, &mut dyn Read, &PathBuf) -> Result<bool, Error>,
 ) -> Result<(), Error> {
-    let pos = src_reader.stream_position().map_err(Error::io)?;
+    let pos = src_reader.seek(SeekFrom::Current(0)).map_err(Error::io)?;
     let len = src_reader.seek(SeekFrom::End(0)).map_err(Error::io)?;
     src_reader.seek(SeekFrom::Start(pos)).map_err(Error::io)?;
     let mut seven = SevenZReader::new(src_reader, len, password)?;

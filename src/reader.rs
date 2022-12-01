@@ -114,7 +114,7 @@ impl Archive {
         let start_header_crc = 0xffffffff & read_u32(reader)?;
 
         let header_valid = if start_header_crc == 0 {
-            let current_position = reader.stream_position().map_err(Error::io)?;
+            let current_position = reader.seek(SeekFrom::Current(0)).map_err(Error::io)?;
             let mut buf = [0; 20];
             reader.read_exact(&mut buf).map_err(Error::io)?;
             reader
@@ -142,7 +142,7 @@ impl Archive {
         if value != start_header_crc {
             return Err(Error::ChecksumVerificationFailed);
         }
-        let mut buf_read = buf.as_slice();
+        let mut buf_read = &buf[..];
         let offset = read_u64le(&mut buf_read)?;
 
         let size = read_u64le(&mut buf_read)?;
@@ -197,10 +197,10 @@ impl Archive {
         password: &[u8],
     ) -> Result<Self, Error> {
         let search_limit = 1024 * 1024 * 1;
-        let prev_data_size = reader.stream_position().map_err(Error::io)? + 20;
+        let prev_data_size = reader.seek(SeekFrom::Current(0)).map_err(Error::io)? + 20;
         let size = reader_len;
-        let min_pos = if reader.stream_position().map_err(Error::io)? + search_limit > size {
-            reader.stream_position().map_err(Error::io)?
+        let min_pos = if reader.seek(SeekFrom::Current(0)).map_err(Error::io)? + search_limit > size {
+            reader.seek(SeekFrom::Current(0)).map_err(Error::io)?
         } else {
             size - search_limit
         };
@@ -1100,7 +1100,7 @@ impl<R: Read + Seek> SevenZReader<R> {
                 f
             } else {
                 entry_index += 1;
-                let empty_reader: &mut dyn Read = &mut ([0u8; 0].as_slice());
+                let empty_reader: &mut dyn Read = &mut (&[0u8; 0][..]);
                 each(file, empty_reader)?;
                 continue;
             };
